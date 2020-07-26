@@ -87,7 +87,7 @@ const formatDataToRightFormat = data => {
             formattedData[row.language].count = 1;
             formattedData[row.language].repositories = [row.full_name];
         } else {
-            formattedData[row.language].count += 1;
+            formattedData[row.language].count++;
             formattedData[row.language].repositories.push(row.full_name);
         }
     });
