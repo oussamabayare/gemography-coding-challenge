@@ -1,8 +1,8 @@
 module.exports = {
-    "api_list" : {
-        "github" : {
-            "url" : "api.github.com",
-            "userAgent" : "'Mozilla/5.0'"
+    dev_port: 10000,
+    api_list: {
+        github: {
+            BaseUrl: "https://api.github.com"
         }
     }
 };

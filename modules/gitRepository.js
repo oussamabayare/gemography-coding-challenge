@@ -1,9 +1,10 @@
 const https = require('https');
+
 const moment = require('moment');
 const dateFormat = require('dateformat');
+const Axios = require('axios');
 
-const API_URL = require('../config/config').api_list.github.url;
-const USER_AGENT = require('../config/config').api_list.github.userAgent;
+const API_URL = require('../config/config').api_list.github.BaseUrl;
 
 /**
  * Function that returns the languages used by the first 100 trending public repos on GitHub
@@ -36,7 +37,7 @@ exports.getTrendingLanguages = (req, res) => {
 };
 
 /**
- * Function that prepare the actual request
+ * API call from Github Endpoint using https
  *
  * @param date
  * @returns {Promise<Object>}
@@ -44,40 +45,27 @@ exports.getTrendingLanguages = (req, res) => {
 const getLanguagesByRepositoriesRequest = (date) => new Promise((resolve, reject) => {
 
     // Creating request
-    const URL_PATH = "/search/repositories";
-    const FULL_URL = `${URL_PATH}?q=created:>${date}&sort=stars&order=desc&page=1&per_page=100`;
-
-    const options = {
-        hostname: API_URL,
-        path: FULL_URL,
-        method: 'GET',
-        headers: {
-            'User-Agent': USER_AGENT
-        }
-    };
-
-    const request = https.request(options, (response) => {
-
-        if (response.statusCode === 200) {
-
-            let rawData = '';
-
-            // Adding chunks of data to rawData when it has been received.
-            response.on('data', (chunk) => {
-                rawData += chunk;
-            });
-
-            // The whole response has been received send it back to the main function.
-            response.on('end', () => {
-                resolve(JSON.parse(rawData).items);
-            });
-        }
+    const API_call = Axios.create({
+        baseURL: API_URL,
+        httpsAgent: new https.Agent({ keepAlive: true })
     });
-    request.on('error', (err) => {
+
+    const URL_PATH = "/search/repositories";
+
+    API_call.get(URL_PATH, {
+        params: {
+            q: `created:>${date}`,
+            sort: "stars",
+            order: "desc",
+            page: 1,
+            per_page: 100
+        }
+    }).then(result => {
+        resolve(result.data.items);
+    }).catch(err => {
         console.error(err);
         reject(err);
     });
-    request.end();
 });
 
 /**
@@ -86,7 +74,7 @@ const getLanguagesByRepositoriesRequest = (date) => new Promise((resolve, reject
  * @param data
  * @returns {{}}
  */
-const formatDataToRightFormat = (data) => {
+const formatDataToRightFormat = data => {
 
     let formattedData = {};
 
