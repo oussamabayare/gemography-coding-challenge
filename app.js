@@ -8,6 +8,7 @@ const express = require('express');
 const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
 const Logger = require('morgan');
+const favicon = require('serve-favicon');
 
 const mainRouter = require('./routes/main.router');
 const apiRouter = require('./routes/api.router');
@@ -27,6 +28,7 @@ https.createServer({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 app.use(Logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
