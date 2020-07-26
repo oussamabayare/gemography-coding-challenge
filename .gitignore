@@ -62,3 +62,8 @@ typings/
 
 # editor
 .idea
+
+/cert/server.cert
+/cert/server.key
+
+package-lock.json
